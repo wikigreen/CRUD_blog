@@ -3,14 +3,19 @@ package model;
 
 public class Region {
     private String name;
-    private long id;
+    private Long id;
 
-    public Region (long id, String name){
+    public Region (int id, String name){
+        this.id = (long)id;
+        this.name = name;
+    }
+
+    public Region (Long id, String name){
         this.id = id;
         this.name = name;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -33,7 +38,7 @@ public class Region {
 
         Region region = (Region) o;
 
-        if (id != region.id) return false;
+        if (!id.equals(region.id)) return false;
         return name != null ? name.equals(region.name) : region.name == null;
     }
 
