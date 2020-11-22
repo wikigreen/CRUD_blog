@@ -1,9 +1,10 @@
-package model;
+package com.vladimir.crudblog.model;
 
+import java.util.Objects;
 
 public class Region {
-    private String name;
     private Long id;
+    private String name;
 
     public Region (int id, String name){
         this.id = (long)id;
@@ -39,7 +40,7 @@ public class Region {
         Region region = (Region) o;
 
         if (!id.equals(region.id)) return false;
-        return name != null ? name.equals(region.name) : region.name == null;
+        return Objects.equals(name, region.name);
     }
 
     @Override
