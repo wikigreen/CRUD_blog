@@ -10,14 +10,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PostRepository implements GenericRepository <Post, Long>{
-    private final String REGIONS_FILE_PATH = "src//main//resources//files//posts.txt";
     private static PostRepository instance;
     private final File file;
     DataOutputStream dataOutputStream;
     private Long lastId;
 
     private PostRepository() throws IOException {
-        file = new File(REGIONS_FILE_PATH);
+        file = new File("src//main//resources//files//posts.txt");
         dataOutputStream = new DataOutputStream(new FileOutputStream(file, true));
     }
 
@@ -51,13 +50,12 @@ public class PostRepository implements GenericRepository <Post, Long>{
 
     @Override
     public Post update(Post post) {
-        long id = post.getId();
+        Long id = post.getId();
         List<Post> lines = streamOfPosts().collect(Collectors.toList());
         clear();
-        lines.stream()
-                .forEach((p) -> {
+        lines.forEach((p) -> {
                     try {
-                        if (p.getId() == id){
+                        if (p.getId().equals(id)){
                             dataOutputStream.writeLong(post.getId());
                             dataOutputStream.writeUTF(post.getContent());
                             dataOutputStream.writeLong(post.getCreated().getTime());
@@ -82,10 +80,9 @@ public class PostRepository implements GenericRepository <Post, Long>{
         List<Post> lines = streamOfPosts().collect(Collectors.toList());
 
         clear();
-        lines.stream()
-                .forEach((p) -> {
+        lines.forEach((p) -> {
                     try {
-                        if (id != p.getId()) {
+                        if (!id.equals(p.getId())) {
                             dataOutputStream.writeLong(p.getId());
                             dataOutputStream.writeUTF(p.getContent());
                             dataOutputStream.writeLong(p.getCreated().getTime());

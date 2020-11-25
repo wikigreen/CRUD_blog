@@ -84,7 +84,8 @@ public class Post {
         String updatedTime = getCreated().equals(getUndated())  ?
                 "Not updated yet" :
                 format.format(getUndated()).toString();
-        return "Created: " + createdTime +"\n"
+        return  "Id: " + id + "\n" +
+                "Created: " + createdTime +"\n"
                 + "Updated: "+ updatedTime  +"\n"
                 + "Content: " + content;
 
