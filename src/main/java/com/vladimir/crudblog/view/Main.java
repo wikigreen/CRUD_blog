@@ -15,13 +15,18 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        //clearReps();
+        clearReps();
         fillRep();
         UserRepository userRepository = UserRepository.getInstance();
         userRepository.getList().stream().forEach(System.out::println);
         System.out.println();
 
-        //userRepository.getList().stream().forEach(System.out::println);
+        userRepository.deletePostById((long)1);
+        userRepository.getList().get(0).getPosts().remove(0);
+        //        userRepository.deletePostById((long)2);
+//        userRepository.deletePostById((long)3);
+
+        userRepository.getList().stream().forEach(System.out::println);
         //userRepository.getList().stream().flatMap(u -> u.getPosts().stream()).forEach(System.out::println);
         //changeReps();
         //userRepository.getList().stream().flatMap(u -> u.getPosts().stream()).forEach(System.out::println);
@@ -32,16 +37,16 @@ public class Main {
         PostRepository postRepository = PostRepository.getInstance();
         UserRepository userRepository = UserRepository.getInstance();
 
-        Region myRegion = new Region(null, "USA");
+        Region myRegion = new Region(null, "UA");
         regionRepository.save(myRegion);
 
         List<Post> posts = new ArrayList<>();
         for (int i = 0; i < 10; i++){
-            Post tempPost = new Post(null, "Post №" + (i + 11));
+            Post tempPost = new Post(null, "Post №" + (i + 1));
             postRepository.save(tempPost);
             posts.add(tempPost);
         }
-        userRepository.save(new User(null, "Dima", "Pupkin", posts, myRegion, Role.ADMIN));
+        userRepository.save(new User(null, "Vova", "Hrynevych", posts, myRegion, Role.MODERATOR));
    }
 
    static void clearReps(){
@@ -56,13 +61,10 @@ public class Main {
 
    static void changeReps(){
        UserRepository.getInstance().getList().stream()
-               .flatMap(u -> u.getPosts().stream())
-               .forEach(p -> {
-                   if(p.getId() % 2 == 0){
-                       p.setContent("Changed Post № " + p.getId());
-                       PostRepository.getInstance().update(p);
-                   }
-               });
+               .flatMap(u -> u.getPosts().stream()).filter(p -> p.getId() % 2 == 0).forEach(p -> {
+           p.setContent("Changed Post № " + p.getId());
+           PostRepository.getInstance().update(p);
+       });
    }
 
 }

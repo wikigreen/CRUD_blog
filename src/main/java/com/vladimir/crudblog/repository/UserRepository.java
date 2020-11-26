@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -114,16 +115,16 @@ public class UserRepository implements GenericRepository<User, Long>{
         List<User> lines = streamOfUsers().collect(Collectors.toList());
 
         clear();
-        lines.forEach((p) -> {
+        lines.forEach((u) -> {
             try {
-                if (!id.equals(p.getId())) {
-                    dataOutputStream.writeLong(p.getId());
-                    dataOutputStream.writeUTF(p.getFirstName());
-                    dataOutputStream.writeUTF(p.getLastName());
-                    dataOutputStream.writeLong(p.getRegion().getId());
-                    dataOutputStream.writeUTF(p.getRole().toString());
-                    dataOutputStream.writeInt(p.getPosts().size());
-                    p.getPosts().stream().forEach(u -> {
+                if (!id.equals(u.getId())) {
+                    dataOutputStream.writeLong(u.getId());
+                    dataOutputStream.writeUTF(u.getFirstName());
+                    dataOutputStream.writeUTF(u.getLastName());
+                    dataOutputStream.writeLong(u.getRegion().getId());
+                    dataOutputStream.writeUTF(u.getRole().toString());
+                    dataOutputStream.writeInt(u.getPosts().size());
+                    u.getPosts().stream().forEach(p -> {
                         try {
                             dataOutputStream.writeLong(p.getId());
                         } catch (IOException e) {
@@ -132,6 +133,45 @@ public class UserRepository implements GenericRepository<User, Long>{
                     });
                     dataOutputStream.flush();
                 }
+            } catch (IOException e) {
+                System.err.println("An error while deleting from users.txt");
+            }
+        });
+    }
+
+    public void deletePostById(Long id){
+        List<User> lines = streamOfUsers().collect(Collectors.toList());
+        Long tempId = lines.stream().flatMap(u -> u.getPosts().stream())
+                .map(Post::getId)
+                .filter(l -> l.equals(id))
+                .findAny()
+                .orElse((long)-1);
+        if (tempId.equals(-1)){
+            System.out.println("dont work");
+            return;
+        }
+        System.out.println(tempId);
+        clear();
+        lines.forEach((u) -> {
+            try {
+                dataOutputStream.writeLong(u.getId());
+                dataOutputStream.writeUTF(u.getFirstName());
+                dataOutputStream.writeUTF(u.getLastName());
+                dataOutputStream.writeLong(u.getRegion().getId());
+                dataOutputStream.writeUTF(u.getRole().toString());
+                dataOutputStream.writeInt(u.getPosts().size() - 1);
+                u.getPosts().stream()
+                        .forEach(p -> {
+                    try {
+                        if(!p.getId().equals(id))
+                        dataOutputStream.writeLong(p.getId());
+                        System.out.println(!p.equals(id) + " " + p.getId());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                dataOutputStream.flush();
+
             } catch (IOException e) {
                 System.err.println("An error while deleting from users.txt");
             }
@@ -184,7 +224,9 @@ public class UserRepository implements GenericRepository<User, Long>{
                 .orElseThrow(() -> new IllegalStateException("PostRepository does not have post with id " + l))).collect(Collectors.toList());
                 listOfUsers.add(new User(tempId, tempFirstName, tempLastName, tempPosts, tempRegion, tempRole));
             } catch (IOException e) {
-                System.err.println("Error while reading from posts.txt");
+                System.out.println();
+                e.printStackTrace(System.out);
+                System.out.println();
             }
         }
         return listOfUsers.stream();
