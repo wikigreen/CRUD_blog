@@ -1,6 +1,5 @@
 package com.vladimir.crudblog.model;
 
-import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

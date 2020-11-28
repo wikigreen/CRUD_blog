@@ -51,6 +51,11 @@ public class RegionRepository implements GenericRepository<Region, Long>{
     }
 
     public Region update(Region region) {
+        streamOfRegions()
+                .filter(p -> p.getId().equals(region.getId()))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("There is no region with id " + region.getId() + " in repository"));
+
+
         long id = region.getId();
         List<Region> lines = streamOfRegions().collect(Collectors.toList());
         clear();
@@ -71,9 +76,19 @@ public class RegionRepository implements GenericRepository<Region, Long>{
         return region;
     }
 
-    public void deleteById(Long id) {
-        List<Region> lines = streamOfRegions().collect(Collectors.toList());
+    @Override
+    public Region getById(Long id) {
+        return streamOfRegions()
+                .filter(p -> p.getId().equals(id))
+                .findAny().orElse(null);
+    }
 
+    public void deleteById(Long id) {
+        streamOfRegions()
+                .filter(p -> p.getId().equals(id))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("There is no region with id " + id + " in repository"));
+
+        List<Region> lines = streamOfRegions().collect(Collectors.toList());
         clear();
         lines.stream()
                 .forEach((r) -> {
@@ -82,14 +97,13 @@ public class RegionRepository implements GenericRepository<Region, Long>{
                             bufferedWriter.write(repositoryToString(r) + System.lineSeparator());
                             bufferedWriter.flush();
                         }
-
                     } catch (IOException e) {
                         System.err.println("An error while deleting");
                     }
                 });
     }
 
-    public List<Region> getList() {
+    public List<Region> getAll() {
         return streamOfRegions().collect(Collectors.toList());
     }
 

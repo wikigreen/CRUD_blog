@@ -50,7 +50,9 @@ public class Region {
         return result;
     }
 
-    public String toString(){
-        return this.id + "," + this.name;
+    @Override
+    public String toString() {
+        return "id=" + id +
+                ", name='" + name + '\'';
     }
 }

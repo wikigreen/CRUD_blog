@@ -50,6 +50,10 @@ public class PostRepository implements GenericRepository <Post, Long>{
 
     @Override
     public Post update(Post post) {
+        streamOfPosts()
+                .filter(p -> p.getId().equals(post.getId()))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("There is no region with id " + post.getId()));
+
         Long id = post.getId();
         List<Post> lines = streamOfPosts().collect(Collectors.toList());
         clear();
@@ -58,7 +62,7 @@ public class PostRepository implements GenericRepository <Post, Long>{
                         if (p.getId().equals(id)){
                             dataOutputStream.writeLong(post.getId());
                             dataOutputStream.writeUTF(post.getContent());
-                            dataOutputStream.writeLong(post.getCreated().getTime());
+                            dataOutputStream.writeLong(p.getCreated().getTime());
                             dataOutputStream.writeLong(new Date().getTime());
                         }
                         else {
@@ -76,7 +80,17 @@ public class PostRepository implements GenericRepository <Post, Long>{
     }
 
     @Override
+    public Post getById(Long id) {
+        return streamOfPosts()
+                .filter(p -> p.getId().equals(id))
+                .findAny().orElse(null);
+    }
+
+    @Override
     public void deleteById(Long id) {
+        streamOfPosts()
+                .filter(p -> p.getId().equals(id))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("There is no region with id " + id));
         List<Post> lines = streamOfPosts().collect(Collectors.toList());
 
         clear();
@@ -96,7 +110,7 @@ public class PostRepository implements GenericRepository <Post, Long>{
     }
 
     @Override
-    public List<Post> getList() {
+    public List<Post> getAll() {
         return streamOfPosts().collect(Collectors.toList());
     }
 

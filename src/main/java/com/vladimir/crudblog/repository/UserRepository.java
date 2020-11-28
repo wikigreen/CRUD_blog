@@ -111,6 +111,13 @@ public class UserRepository implements GenericRepository<User, Long>{
     }
 
     @Override
+    public User getById(Long id) {
+        return streamOfUsers()
+                .filter(p -> p.getId().equals(id))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("There is no region with id " + id));
+    }
+
+    @Override
     public void deleteById(Long id) {
         List<User> lines = streamOfUsers().collect(Collectors.toList());
 
@@ -179,7 +186,7 @@ public class UserRepository implements GenericRepository<User, Long>{
     }
 
     @Override
-    public List<User> getList() {
+    public List<User> getAll() {
         return streamOfUsers().collect(Collectors.toList());
     }
 
@@ -210,7 +217,7 @@ public class UserRepository implements GenericRepository<User, Long>{
                 String tempFirstName = dis.readUTF();
                 String tempLastName = dis.readUTF();
                 Long tempRegionId = dis.readLong();
-                Region tempRegion = regionRepository.getList().stream()
+                Region tempRegion = regionRepository.getAll().stream()
                         .filter(r -> r.getId().equals(tempRegionId))
                         .findFirst()
                         .orElseThrow(() -> new IllegalStateException("RegionRepository does not have region with id " + tempRegionId));
@@ -218,7 +225,7 @@ public class UserRepository implements GenericRepository<User, Long>{
                 List<Long> tempPostIDs = new ArrayList<>();
                 for(int i = dis.readInt(); i > 0; i--)
                     tempPostIDs.add(dis.readLong());
-                List<Post> tempPosts = tempPostIDs.stream().map(l -> postRepository.getList().stream()
+                List<Post> tempPosts = tempPostIDs.stream().map(l -> postRepository.getAll().stream()
                 .filter(p -> p.getId().equals(l))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("PostRepository does not have post with id " + l))).collect(Collectors.toList());
