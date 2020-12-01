@@ -1,13 +1,9 @@
 package com.vladimir.crudblog.view;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.NumberFormat;
-
 public class Main {
     private static boolean isRunning = true;
     public static void main(String[] args) {
-        System.out.println("Type 'commands' to see all commands.");
+        System.out.println("Type 'help' to see all commands.");
         while(isRunning){
             System.out.print("Type command:");
             executeCommand();
@@ -17,14 +13,14 @@ public class Main {
     }
 
     private static void executeCommand(){
-        String[] tempCommands = ConsoleHelper.readLine().trim().split(" ");
+        String[] tempCommands = ConsoleHelper.readLine().trim().split(" +");
         String[] commands = {tempCommands[0], "", ""};
 
         try {commands[1] = tempCommands[1];} catch (ArrayIndexOutOfBoundsException ignored) {}
         View view = switch (commands[1]){
             case "region": yield new RegionView();
             case "post": yield new PostView();
-                //case "user":
+            case "user": yield new UserView();
             default: yield null;
         };
 
@@ -36,27 +32,25 @@ public class Main {
             switch (commands[0]) {
                 case ""            -> {}
                 case "exit"        -> isRunning = false;
-                case "commands"    -> executeCommands();
+                case "help"        -> executeHelp();
                 case "create"      -> view.create();
                 case "read_all"    -> view.readAll();
                 case "read"        -> view.read(id);
                 case "update"      -> view.update(id);
                 case "delete"      -> view.delete(id);
                 default            -> System.out.println("'" + commands[0] + "'" + " is not a command" +
-                        "\n" + "Type 'commands' to see all commands.");
+                        "\n" + "Type 'help' to see all commands.");
             }
         } catch (NullPointerException e){
-            //if there is no second part of command (should be followed by)
             if("".equals(commands[1]))
                 System.out.println("After command '" + commands[0] + "' should be a type of object ('region', 'post' or 'user') and id, if necessary" + "\n"
-                + "For example: create region");
+                + "For example: '" + commands[0] + "' region");
             else
-                System.out.println("Type '" + commands[1] + "' is not supported, only 'region', 'post' or 'user' allowed");
+               System.out.println("Type '" + commands[1] + "' is not supported, only 'region', 'post' or 'user' allowed");
         } catch (IllegalArgumentException e1){
-            //if there is no id
             if("".equals(commands[2]))
                 System.out.println("After command '" + commands[0] + " " + commands[1] + "' should be an ID" + "\n"
-                        + "For example: delete region 1");
+                        + "For example: '" + commands[0] + " " + commands[1] + "' 1");
             else
                 System.out.println(commands[2] + " is not a number");
         }
@@ -64,20 +58,35 @@ public class Main {
 
     }
 
-    private static void executeCommands() {
-        System.out.println("Not supported yet");
+    private static void executeHelp() {
+        System.out.println("Types of data objects, that can be handled:\n" +
+                "\tregion\t\tRepresents name of region. Used with \"user\" type.\n" +
+                "\t\t\t\tContains 'id', that sets automatically and 'name', that can be set by user.\n" +
+                "\n" +
+                "\tpost\t\tRepresents user`s post.\n" +
+                "\t\t\t\tContains 'id', that sets automatically, 'content', that can be set by user,\n" +
+                "\t\t\t\t'creation date' and 'modification date'.\n" +
+                "\n" +
+                "\tuser\t\tRepresents user. \n" +
+                "\t\t\t\tContains 'id', that sets automatically, users first and last name, 'role' (user,\n" +
+                "\t\t\t\tmoderator or admin), 'region' type (can be get from DB or created during the \n" +
+                "\t\t\t\tmaking user), list of 'posts' type, (can be added from DB or created during the \n" +
+                "\t\t\t\tmaking user).\n" +
+                "\n" +
+                "List of commands:\n" +
+                "\tcreate <type>\t\tCreates and saves one of supported types to DB.\n" +
+                "\t\t\t\t\t\tFor example: \"create region\".\n" +
+                "\n" +
+                "\tread_all <type>\t\tPrints list of all objects of the specified <type>.\n" +
+                "\t\t\t\t\t\tFor example: \"read_all region\".\n" +
+                "\n" +
+                "\tread <type> <id>\tPrints specific object of type <type> with ID <id>. <id> is number\n" +
+                "\t\t\t\t\t\tgreater than 0. For example: \"read region 1\".\n" +
+                "\n" +
+                "\tupdate <type> <id>\tUpdates specific object of type <type> with ID <id>.\n" +
+                "\t\t\t\t\t\tFor example: \"update region 1\".\n" +
+                "\n" +
+                "\tdelete <type> <id>\tDeletes specific object of type <type> with ID <id> from DB.\n" +
+                "\t\t\t\t\t\tFor example: \"update region 1\".\n");
     }
-
-
-    static void clearReps(){
-       try {
-           new PrintWriter("src//main//resources//files//posts.txt").close();
-           new PrintWriter("src//main//resources//files//regions.txt").close();
-           new PrintWriter("src//main//resources//files//users.txt").close();
-       } catch (IOException e) {
-           System.err.println("Repository has not been cleared");
-       }
-   }
-
-
 }

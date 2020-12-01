@@ -2,7 +2,7 @@ package com.vladimir.crudblog.model;
 
 public enum Role {
     ADMIN("admin"), MODERATOR("moder"), USER("user");
-    private String role;
+    private final String role;
 
     Role(String role) {
         this.role = role;
@@ -19,6 +19,6 @@ public enum Role {
             return MODERATOR;
         if(role.equals("admin"))
             return ADMIN;
-        throw new IllegalArgumentException(role + "is not a role");
+        throw new IllegalArgumentException(role + " is not a role");
     }
 }

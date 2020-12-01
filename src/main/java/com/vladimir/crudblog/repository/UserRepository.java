@@ -7,19 +7,17 @@ import com.vladimir.crudblog.model.User;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class UserRepository implements GenericRepository<User, Long>{
+public class  UserRepository implements GenericRepository<User, Long>{
     private static UserRepository instance;
     private final File file;
     DataOutputStream dataOutputStream;
     private Long lastId;
-    private PostRepository postRepository;
-    private RegionRepository regionRepository;
+    private final PostRepository postRepository;
+    private final RegionRepository regionRepository;
 
     private UserRepository() throws IOException {
         file = new File("src//main//resources//files//users.txt");
@@ -44,15 +42,15 @@ public class UserRepository implements GenericRepository<User, Long>{
         if (user.getId() == null)
             user.setId(generateId());
         try {
-            dataOutputStream.writeLong(user.getId());
-            dataOutputStream.writeUTF(user.getFirstName());
-            dataOutputStream.writeUTF(user.getLastName());
-            dataOutputStream.writeLong(user.getRegion().getId());
-            dataOutputStream.writeUTF(user.getRole().toString());
-            dataOutputStream.writeInt(user.getPosts().size());
-            user.getPosts().stream().forEach(p -> {
+            dataOutputStream.writeLong(user.getId());//writing user ID
+            dataOutputStream.writeUTF(user.getFirstName());// writing fn
+            dataOutputStream.writeUTF(user.getLastName());// writing ln
+            dataOutputStream.writeLong(user.getRegion() == null ? (long)0 : user.getRegion().getId());// writing region ID
+            dataOutputStream.writeUTF(user.getRole().toString());// writing role
+            dataOutputStream.writeInt(user.getPosts().size());// writing posts size
+            user.getPosts().forEach(p -> {
                 try {
-                    dataOutputStream.writeLong(p.getId());
+                    dataOutputStream.writeLong(p == null ? (long)0 : p.getId());// writing post
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -76,12 +74,12 @@ public class UserRepository implements GenericRepository<User, Long>{
                     dataOutputStream.writeLong(user.getId());
                     dataOutputStream.writeUTF(user.getFirstName());
                     dataOutputStream.writeUTF(user.getLastName());
-                    dataOutputStream.writeLong(user.getRegion().getId());
+                    dataOutputStream.writeLong(user.getRegion() == null ? (long)0 : user.getRegion().getId());
                     dataOutputStream.writeUTF(user.getRole().toString());
                     dataOutputStream.writeInt(user.getPosts().size());
                     user.getPosts().stream().forEach(p -> {
                         try {
-                            dataOutputStream.writeLong(p.getId());
+                            dataOutputStream.writeLong(p == null ? (long)0 : p.getId());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -91,12 +89,12 @@ public class UserRepository implements GenericRepository<User, Long>{
                     dataOutputStream.writeLong(u.getId());
                     dataOutputStream.writeUTF(u.getFirstName());
                     dataOutputStream.writeUTF(u.getLastName());
-                    dataOutputStream.writeLong(u.getRegion().getId());
+                    dataOutputStream.writeLong(u.getRegion() == null ? (long)0 : u.getRegion().getId());
                     dataOutputStream.writeUTF(u.getRole().toString());
                     dataOutputStream.writeInt(u.getPosts().size());
                     u.getPosts().stream().forEach(p -> {
                         try {
-                            dataOutputStream.writeLong(p.getId());
+                            dataOutputStream.writeLong(p == null ? (long)0 : p.getId());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -114,7 +112,7 @@ public class UserRepository implements GenericRepository<User, Long>{
     public User getById(Long id) {
         return streamOfUsers()
                 .filter(p -> p.getId().equals(id))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("There is no region with id " + id));
+                .findAny().orElse(null);
     }
 
     @Override
@@ -128,57 +126,18 @@ public class UserRepository implements GenericRepository<User, Long>{
                     dataOutputStream.writeLong(u.getId());
                     dataOutputStream.writeUTF(u.getFirstName());
                     dataOutputStream.writeUTF(u.getLastName());
-                    dataOutputStream.writeLong(u.getRegion().getId());
+                    dataOutputStream.writeLong(u.getRegion() == null ? (long)0 : u.getRegion().getId());
                     dataOutputStream.writeUTF(u.getRole().toString());
                     dataOutputStream.writeInt(u.getPosts().size());
                     u.getPosts().stream().forEach(p -> {
                         try {
-                            dataOutputStream.writeLong(p.getId());
+                            dataOutputStream.writeLong(p == null ? (long)0 : p.getId());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     });
                     dataOutputStream.flush();
                 }
-            } catch (IOException e) {
-                System.err.println("An error while deleting from users.txt");
-            }
-        });
-    }
-
-    public void deletePostById(Long id){
-        List<User> lines = streamOfUsers().collect(Collectors.toList());
-        Long tempId = lines.stream().flatMap(u -> u.getPosts().stream())
-                .map(Post::getId)
-                .filter(l -> l.equals(id))
-                .findAny()
-                .orElse((long)-1);
-        if (tempId.equals(-1)){
-            System.out.println("dont work");
-            return;
-        }
-        System.out.println(tempId);
-        clear();
-        lines.forEach((u) -> {
-            try {
-                dataOutputStream.writeLong(u.getId());
-                dataOutputStream.writeUTF(u.getFirstName());
-                dataOutputStream.writeUTF(u.getLastName());
-                dataOutputStream.writeLong(u.getRegion().getId());
-                dataOutputStream.writeUTF(u.getRole().toString());
-                dataOutputStream.writeInt(u.getPosts().size() - 1);
-                u.getPosts().stream()
-                        .forEach(p -> {
-                    try {
-                        if(!p.getId().equals(id))
-                        dataOutputStream.writeLong(p.getId());
-                        System.out.println(!p.equals(id) + " " + p.getId());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-                dataOutputStream.flush();
-
             } catch (IOException e) {
                 System.err.println("An error while deleting from users.txt");
             }
@@ -213,22 +172,18 @@ public class UserRepository implements GenericRepository<User, Long>{
                 e.printStackTrace();
             }
             try {
-                Long tempId = dis.readLong();
-                String tempFirstName = dis.readUTF();
-                String tempLastName = dis.readUTF();
-                Long tempRegionId = dis.readLong();
-                Region tempRegion = regionRepository.getAll().stream()
-                        .filter(r -> r.getId().equals(tempRegionId))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalStateException("RegionRepository does not have region with id " + tempRegionId));
-                Role tempRole = Role.parseRole(dis.readUTF());
-                List<Long> tempPostIDs = new ArrayList<>();
-                for(int i = dis.readInt(); i > 0; i--)
-                    tempPostIDs.add(dis.readLong());
-                List<Post> tempPosts = tempPostIDs.stream().map(l -> postRepository.getAll().stream()
-                .filter(p -> p.getId().equals(l))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("PostRepository does not have post with id " + l))).collect(Collectors.toList());
+                Long tempId = dis.readLong();//reading user ID
+                String tempFirstName = dis.readUTF();// reading fn
+                String tempLastName = dis.readUTF();// reading ln
+                Long tempRegionId = dis.readLong();// reading region ID
+                Role tempRole = Role.parseRole(dis.readUTF()); // reading role
+                Region tempRegion = regionRepository.getById(tempRegionId);
+                List<Post> tempPosts = new ArrayList<>();
+                for(int i = dis.readInt(); i > 0; i--){// reading posts size
+                    Long tempPostId = dis.readLong();//reading post id
+                    if(!tempPostId.equals((long)0))
+                        tempPosts.add(postRepository.getById(tempPostId));
+                }
                 listOfUsers.add(new User(tempId, tempFirstName, tempLastName, tempPosts, tempRegion, tempRole));
             } catch (IOException e) {
                 System.out.println();
@@ -240,7 +195,7 @@ public class UserRepository implements GenericRepository<User, Long>{
 
     }
 
-    private Long generateId (){
+    private Long generateId() {
         if(this.lastId == null){
             if (streamOfUsers().count() == 0) {
                 lastId = (long) 0;

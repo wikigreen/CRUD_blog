@@ -1,7 +1,6 @@
 package com.vladimir.crudblog.view;
 
 import com.vladimir.crudblog.controller.PostController;
-import com.vladimir.crudblog.controller.RegionController;
 import com.vladimir.crudblog.model.Post;
 
 import java.util.List;

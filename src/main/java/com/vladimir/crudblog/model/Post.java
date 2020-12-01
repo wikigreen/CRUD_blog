@@ -2,6 +2,7 @@ package com.vladimir.crudblog.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class Post {
     private Long id;
@@ -21,9 +22,6 @@ public class Post {
         this.content = content;
         this.created = new Date();
         this.undated = new Date(created.getTime());
-    }
-    public Post(int id, String content){
-        this((long)id, content);
     }
 
     public Long getId() {
@@ -50,7 +48,7 @@ public class Post {
         this.content = content;
     }
 
-    public void setUndated(Date undated) {
+    public void setUpdated(Date undated) {
         this.undated = undated;
     }
 
@@ -78,15 +76,15 @@ public class Post {
 
     @Override
     public String toString() {
-        SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy hh:mm");
-        String createdTime = format.format(getCreated()).toString();
+        SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy hh:mm", Locale.ENGLISH);
+        String createdTime = format.format(getCreated());
         String updatedTime = getCreated().equals(getUndated())  ?
                 "Not updated yet" :
-                format.format(getUndated()).toString();
+                format.format(getUndated());
         return  "Id: " + id + "\n" +
                 "Created: " + createdTime +"\n"
                 + "Updated: "+ updatedTime  +"\n"
-                + "Content: " + content;
+                + "Content:" + "\n" + content ;
 
     }
 }

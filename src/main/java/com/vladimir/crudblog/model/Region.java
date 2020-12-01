@@ -6,11 +6,6 @@ public class Region {
     private Long id;
     private String name;
 
-    public Region (int id, String name){
-        this.id = (long)id;
-        this.name = name;
-    }
-
     public Region (Long id, String name){
         this.id = id;
         this.name = name;
@@ -52,7 +47,7 @@ public class Region {
 
     @Override
     public String toString() {
-        return "id=" + id +
-                ", name='" + name + '\'';
+        return "ID: " + id +
+                ", name: '" + name + '\'';
     }
 }

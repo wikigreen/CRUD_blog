@@ -95,16 +95,19 @@ public class User {
 
     @Override
     public String toString() {
-        String str = "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' + "\n" +
-                "posts id= ";
-                str += getPosts().stream().map(p -> String.valueOf(p.getId()) + ", ").reduce("", (a, b) -> a + b);
-                str = str.substring(0, str.length() - 2);
-                str += ", region=" + region.toString() +
-                ", role=" + role.toString() +
-                '}';
+        String str =
+                "User`s id: " + id + "\n" +
+                "First name: " + firstName + "\n" +
+                "Last Name: " + lastName +  "\n" +
+                "List of posts: ";
+                str += getPosts().stream()
+                        .filter(p -> p != null)
+                        .map(p -> p.getId() + ", ")
+                        .reduce((a, b) -> a + b)
+                        .orElse("List of posts is empty    ");
+                str = str.substring(0, str.length() - 2) + "\n";
+                str += "Region: " + (region == null ? "null" : region) + "\n" +
+                "Role: " + role.toString();
         return str;
     }
 }

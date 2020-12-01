@@ -17,15 +17,17 @@ public class ConsoleHelper {
         }
     }
 
-    public static int readInt(){
+    public static Long readLong(){
         String str = "";
         while (true){
             try {
                 str = readLine();
-                return Integer.parseInt(str);
+                return Long.parseLong(str);
             } catch (NumberFormatException e){
                 System.err.println("\"" + str + "\"" + " is not a number. Please try again:");
             }
         }
     }
+
+
 }
