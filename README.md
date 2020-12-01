@@ -44,6 +44,9 @@ class UserRepository implements GenericRepository<User, Long>
 * Git
 
 ## How to run 
-* git clone https://github.com/wikigreen/CRUD_blog
-* go to CRUD_blog.src.main.java.com.vladimir.crudblog.view
-* run Main.java
+Steps to run this application using your IDE:
+
+1. Use command 'git clone https://github.com/wikigreen/CRUD_blog'
+2. Go to Main.java in src.main.java.com.vladimir.crudblog.view
+3. Right click the file and Run as Java application
+4. Follow the instructions from console
