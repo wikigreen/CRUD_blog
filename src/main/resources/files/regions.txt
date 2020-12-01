@@ -1,9 +1,0 @@
-3,RU
-4,USA
-6,UA
-7,reg
-8,UA
-9,a
-10,currently
-11,112
-12,here

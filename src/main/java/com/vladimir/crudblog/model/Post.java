@@ -76,7 +76,7 @@ public class Post {
 
     @Override
     public String toString() {
-        SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy hh:mm", Locale.ENGLISH);
+        SimpleDateFormat format = new SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.ENGLISH);
         String createdTime = format.format(getCreated());
         String updatedTime = getCreated().equals(getUndated())  ?
                 "Not updated yet" :
