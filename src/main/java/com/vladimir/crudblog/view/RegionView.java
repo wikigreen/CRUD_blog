@@ -4,19 +4,22 @@ import com.vladimir.crudblog.controller.RegionController;
 import com.vladimir.crudblog.model.Region;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class RegionView implements View{
+    private final Scanner SCANNER = new Scanner(System.in);
+    RegionController regionController = new RegionController();
 
     @Override
     public void create(){
         System.out.print("Enter name of the new region:");
         System.out.println("Added new region "
-                + RegionController.addRegion(ConsoleHelper.readLine()).toString());
+                + regionController.addRegion(SCANNER.nextLine().trim()).toString());
     }
 
     @Override
     public void readAll(){
-        List<Region> regions = RegionController.getAll();
+        List<Region> regions = regionController.getAll();
 
         if(regions.size() == 0){
             System.out.println("No regions in repository");
@@ -34,7 +37,7 @@ public class RegionView implements View{
             System.out.println("ID always should be greater than 0");
             return;
         }
-        Region region = RegionController.getByID(id);
+        Region region = regionController.getByID(id);
         if(region == null){
             System.out.println("There is no region with id " + id);
             return;
@@ -50,9 +53,9 @@ public class RegionView implements View{
             return;
         }
         System.out.print("Type new region name:");
-        Region region = new Region(id, ConsoleHelper.readLine().trim());
+        Region region = new Region(id, SCANNER.nextLine().trim());
         try {
-            RegionController.update(region);
+            regionController.update(region);
         } catch (IllegalArgumentException e){
             System.out.println(e.getMessage());
             return;
@@ -64,13 +67,13 @@ public class RegionView implements View{
     @Override
     public void delete(Long id) {
         if(id == null) throw new IllegalArgumentException();
-        if(id.compareTo((long)0) < 1){
+        if(id.compareTo(0L) < 1){
             System.out.println("ID always should be greater than 0");
             return;
         }
 
         try{
-            RegionController.deleteByID(id);
+            regionController.deleteByID(id);
         } catch (IllegalArgumentException e){
             System.out.println(e.getMessage());
             return;

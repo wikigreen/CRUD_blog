@@ -1,5 +1,7 @@
 package com.vladimir.crudblog.model;
 
+import java.util.Arrays;
+
 public enum Role {
     ADMIN("admin"), MODERATOR("moder"), USER("user");
     private final String role;
@@ -12,13 +14,10 @@ public enum Role {
         return role;
     }
 
-    public static Role parseRole(String role){
-        if(role.equals("user"))
-            return USER;
-        if(role.equals("moder"))
-            return MODERATOR;
-        if(role.equals("admin"))
-            return ADMIN;
-        throw new IllegalArgumentException(role + " is not a role");
+    public static Role parseRole(String role) {
+        return Arrays.stream(Role.values())
+                .filter(r -> r.toString().equals(role))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(role + " is not a role"));
     }
 }

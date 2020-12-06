@@ -1,6 +1,9 @@
-package com.vladimir.crudblog.repository;
+package com.vladimir.crudblog.repository.io;
 
 import com.vladimir.crudblog.model.Region;
+import com.vladimir.crudblog.model.User;
+import com.vladimir.crudblog.repository.GenericRepository;
+import com.vladimir.crudblog.repository.RegionRepository;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -13,24 +16,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RegionRepository implements GenericRepository<Region, Long>{
+public class JavaIORegionRepositoryImpl implements RegionRepository {
 
     private final String REGIONS_FILE_PATH = "src//main//resources//files//regions.txt";
-    private static RegionRepository instance;
+    private static JavaIORegionRepositoryImpl instance;
     private final File file;
     private final BufferedWriter bufferedWriter;
     private Long lastId;
 
 
-    private RegionRepository() throws IOException {
+    private JavaIORegionRepositoryImpl() throws IOException {
         file = new File(REGIONS_FILE_PATH);
         bufferedWriter = new BufferedWriter(new FileWriter(file, true));
     }
 
-    public static RegionRepository getInstance() {
+    public static JavaIORegionRepositoryImpl getInstance() {
         if (instance == null) {
             try {
-                instance = new RegionRepository();
+                instance = new JavaIORegionRepositoryImpl();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -59,8 +62,7 @@ public class RegionRepository implements GenericRepository<Region, Long>{
         long id = region.getId();
         List<Region> lines = streamOfRegions().collect(Collectors.toList());
         clear();
-        lines.stream()
-                .forEach((r) -> {
+        lines.forEach((r) -> {
                     try {
                         if (r.getId() == id){
                             bufferedWriter.write(repositoryToString(region) + System.lineSeparator());
@@ -90,8 +92,7 @@ public class RegionRepository implements GenericRepository<Region, Long>{
 
         List<Region> lines = streamOfRegions().collect(Collectors.toList());
         clear();
-        lines.stream()
-                .forEach((r) -> {
+        lines.forEach((r) -> {
                     try {
                         if (id != r.getId()) {
                             bufferedWriter.write(repositoryToString(r) + System.lineSeparator());
@@ -134,7 +135,7 @@ public class RegionRepository implements GenericRepository<Region, Long>{
     private Stream<Region> streamOfRegions() {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
-            return br.lines().map(RegionRepository::parseRegion);
+            return br.lines().map(JavaIORegionRepositoryImpl::parseRegion);
         } catch (IOException e) {
             System.err.println();
         }
@@ -142,15 +143,12 @@ public class RegionRepository implements GenericRepository<Region, Long>{
 
     }
 
-    private Long generateId (){
+    private Long generateId() {
         if(this.lastId == null){
-            if (streamOfRegions().count() == 0) {
-                lastId = (long) 0;
-            } else {
-                final Long[] lastId = {(long) -1};
-                streamOfRegions().forEachOrdered((r -> lastId[0] = r.getId()));
-                this.lastId = lastId[0];
-            }
+            lastId = streamOfRegions()
+                    .map(Region::getId)
+                    .max(Long::compareTo)
+                    .orElse(0L);
         }
         return ++lastId;
     }

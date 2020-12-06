@@ -7,30 +7,36 @@ import com.vladimir.crudblog.model.Region;
 import com.vladimir.crudblog.model.Role;
 import com.vladimir.crudblog.model.User;
 import com.vladimir.crudblog.repository.RegionRepository;
+import com.vladimir.crudblog.repository.io.JavaIORegionRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class UserView implements View {
-    RegionRepository regionRepository = RegionRepository.getInstance();
+    RegionRepository RegionRepository = JavaIORegionRepositoryImpl.getInstance();
+    UserController userController = new UserController();
+    PostController postController = new PostController();
+    private final Scanner SCANNER = new Scanner(System.in);
+
     @Override
     public void create() {
         System.out.print("Type first name:");
-        String firstName = ConsoleHelper.readLine().trim();
+        String firstName = SCANNER.nextLine().trim();
         System.out.print("Type last name:");
-        String lastName = ConsoleHelper.readLine().trim();
+        String lastName = SCANNER.nextLine().trim();
 
         Region region;
         //Trying to get region
         while(true){
             System.out.println("Type 'new <name>' to add new region, or 'existing <id>' to add region from repository:");
-            String[] splitCommands = ConsoleHelper.readLine().trim().split(" +");
+            String[] splitCommands = SCANNER.nextLine().trim().split(" +");
             if(splitCommands.length < 2){
                 System.out.println("'" + splitCommands[0] + "' command can not be correctly processed");
                 continue;
             }
             if("new".equals(splitCommands[0])){
-                region = regionRepository.save(new Region(null, splitCommands[1]));
+                region = RegionRepository.save(new Region(null, splitCommands[1]));
                 break;
             }
             if("existing".equals(splitCommands[0])){
@@ -45,7 +51,7 @@ public class UserView implements View {
                     System.out.println("ID always should be greater than 0");
                     continue;
                 }
-                region = regionRepository.getById(id);
+                region = RegionRepository.getById(id);
                 if (region == null){
                     System.out.println("Region with id " + id + " does not exist");
                     continue;
@@ -58,7 +64,7 @@ public class UserView implements View {
         Role role;
         while(true){
             System.out.println("Type role (user, moder or admin):");
-            String strRole = ConsoleHelper.readLine().trim();
+            String strRole = SCANNER.nextLine().trim();
             try{
                 role = Role.parseRole(strRole);
             } catch (IllegalArgumentException e){
@@ -73,17 +79,17 @@ public class UserView implements View {
         while(true){
             System.out.print("Type 'new' to add new post, or 'existing <id>' to add region from repository.\n" +
                     "To stop adding posts press 'Enter' button:");
-            String command = ConsoleHelper.readLine().trim();
+            String command = SCANNER.nextLine().trim();
             if("".equals(command))
                 break;
             if("new".equals(command)){
                 System.out.print("Type post, in the end type '%end' to save it:");
                 String strPost = "";
                 String line;
-                while(!(line = ConsoleHelper.readLine()).equals("%end"))
+                while(!(line = SCANNER.nextLine().trim()).equals("%end"))
                     strPost += line + "\n";
                 if (strPost.length() == 0) strPost += " ";
-                Post post = PostController.addPost(strPost);
+                Post post = postController.addPost(strPost);
                 posts.add(post);
                 System.out.println("Added new Post with ID " + post.getId());
                 continue;
@@ -109,7 +115,7 @@ public class UserView implements View {
                 continue;
             }
 
-            Post post = PostController.getByID(parsedId);
+            Post post = postController.getByID(parsedId);
             if(post == null){
                 System.out.println("Post with ID " + parsedId + " does not exist");
                 continue;
@@ -165,11 +171,11 @@ public class UserView implements View {
 
 
         System.out.print("Type new first name. Press 'Enter' to skip:");
-        String firstName = ConsoleHelper.readLine().trim();
+        String firstName = SCANNER.nextLine().trim();
         if("".equals(firstName))
             firstName = null;
         System.out.print("Type new last name. Press 'Enter' to skip:");
-        String lastName = ConsoleHelper.readLine().trim();
+        String lastName = SCANNER.nextLine().trim();
         if("".equals(lastName))
             lastName = null;
 
@@ -178,7 +184,7 @@ public class UserView implements View {
         while(true){
             System.out.print("Type 'new <name>' to add new region, or 'existing <id>' to add region from repository\n"
                                 + "Press 'Enter' to skip:");
-            String[] splitCommands = ConsoleHelper.readLine().trim().split(" +");
+            String[] splitCommands = SCANNER.nextLine().trim().split(" +");
             if("".equals(splitCommands[0]))
                 break;
 
@@ -188,7 +194,7 @@ public class UserView implements View {
             }
 
             if("new".equals(splitCommands[0])){
-                region = regionRepository.save(new Region(null, splitCommands[1]));
+                region = RegionRepository.save(new Region(null, splitCommands[1]));
                 break;
             }
             if("existing".equals(splitCommands[0])){
@@ -203,7 +209,7 @@ public class UserView implements View {
                     System.out.println("ID always should be greater than 0");
                     continue;
                 }
-                region = regionRepository.getById(regionId);
+                region = RegionRepository.getById(regionId);
                 if (region == null){
                     System.out.println("Region with id " + regionId + " does not exist");
                     continue;
@@ -215,7 +221,7 @@ public class UserView implements View {
         Role role = null;
         while(true){
             System.out.println("Type role (user, moder or admin). Press 'Enter' to skip:");
-            String strRole = ConsoleHelper.readLine().trim();
+            String strRole = SCANNER.nextLine().trim();
             if("".equals(strRole))
                 break;
             try{
@@ -230,7 +236,7 @@ public class UserView implements View {
         List<Long> postsToAdd = new ArrayList<>();
         add: while(true){
             System.out.print("Write comma-separated list of posts ID to add them:");
-            String[] strIDsToAdd = ConsoleHelper.readLine().trim().split(",");
+            String[] strIDsToAdd = SCANNER.nextLine().trim().split(",");
             if("".equals(strIDsToAdd[0]))
                 break;
             for(String strId : strIDsToAdd){
@@ -248,7 +254,7 @@ public class UserView implements View {
         List<Long> postsToDelete = new ArrayList<>();
         delete: while(true){
             System.out.print("Write comma-separated list of posts ID to delete them:");
-            String[] strIDsToDelete = ConsoleHelper.readLine().trim().split(",");
+            String[] strIDsToDelete = SCANNER.nextLine().trim().split(",");
             if("".equals(strIDsToDelete[0]))
                 break;
             for(String strId : strIDsToDelete){
@@ -263,7 +269,7 @@ public class UserView implements View {
             break;
         }
 
-        User updatedUser = UserController.update(id, firstName, lastName, region, role, postsToAdd, postsToDelete);
+        User updatedUser = userController.update(id, firstName, lastName, region, role, postsToAdd, postsToDelete);
         System.out.println("User with ID " + updatedUser.getId() + " has been updated successfully");
     }
 

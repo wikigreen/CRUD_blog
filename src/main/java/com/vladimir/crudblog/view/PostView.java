@@ -4,24 +4,28 @@ import com.vladimir.crudblog.controller.PostController;
 import com.vladimir.crudblog.model.Post;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class PostView implements View{
+    private final Scanner SCANNER = new Scanner(System.in);
+    PostController postController = new PostController();
+
     @Override
     public void create() {
         System.out.print("Type post, in the end type '%end' to save it:");
         String post = "";
         String line;
-        while(!(line = ConsoleHelper.readLine()).equals("%end"))
+        while(!(line = SCANNER.nextLine().trim()).equals("%end"))
             post += line + "\n";
         if (post.length() == 0) post += " ";
         System.out.println("Added new Post :"  + "\n"
-                + PostController.addPost(post.substring(0, post.length() - 1)));
+                + postController.addPost(post.substring(0, post.length() - 1)));
 
     }
 
     @Override
     public void readAll() {
-        List<Post> posts = PostController.getAll();
+        List<Post> posts = postController.getAll();
 
         if(posts.size() == 0){
             System.out.println("No posts in repository");
@@ -41,7 +45,7 @@ public class PostView implements View{
             return;
         }
 
-        Post post = PostController.getByID(id);
+        Post post = postController.getByID(id);
         if(post == null){
             System.out.println("There is no post with id " + id);
             return;
@@ -59,12 +63,12 @@ public class PostView implements View{
         System.out.println("Type new post, in the end type '%end' to save it:");
         String content = "";
         String line;
-        while(!(line = ConsoleHelper.readLine()).equals("%end"))
+        while(!(line = SCANNER.nextLine().trim()).equals("%end"))
             content += line + "\n";
         if (content.length() == 0) content += " ";
         Post post = new Post(id, content);
         try{
-            PostController.update(post);
+            postController.update(post);
         } catch (IllegalArgumentException e){
             System.out.println(e.getMessage());
             return;
@@ -82,7 +86,7 @@ public class PostView implements View{
         }
 
         try{
-            PostController.deleteByID(id);
+            postController.deleteByID(id);
         } catch (IllegalArgumentException e){
             System.out.println(e.getMessage());
             return;

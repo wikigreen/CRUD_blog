@@ -1,8 +1,12 @@
 package com.vladimir.crudblog.view;
 
-public class Main {
+import java.util.Scanner;
+
+public class MainMenu {
     private static boolean isRunning = true;
-    public static void main(String[] args) {
+    private Scanner scanner = new Scanner(System.in);
+
+    public void run() {
         System.out.println("Type 'help' to see all commands.");
         while(isRunning){
             System.out.print("Type command:");
@@ -12,8 +16,8 @@ public class Main {
         System.out.println("See you!!!");
     }
 
-    private static void executeCommand(){
-        String[] tempCommands = ConsoleHelper.readLine().trim().split(" +");
+    private void executeCommand(){
+        String[] tempCommands = scanner.nextLine().trim().split(" +");
         String[] commands = {tempCommands[0], "", ""};
 
         try {commands[1] = tempCommands[1];} catch (ArrayIndexOutOfBoundsException ignored) {}
@@ -44,13 +48,13 @@ public class Main {
         } catch (NullPointerException e){
             if("".equals(commands[1]))
                 System.out.println("After command '" + commands[0] + "' should be a type of object ('region', 'post' or 'user') and id, if necessary" + "\n"
-                + "For example: '" + commands[0] + "' region");
+                        + "For example: '" + commands[0] + "' region");
             else
-               System.out.println("Type '" + commands[1] + "' is not supported, only 'region', 'post' or 'user' allowed");
+                System.out.println("Type '" + commands[1] + "' is not supported, only 'region', 'post' or 'user' allowed");
         } catch (IllegalArgumentException e1){
             if("".equals(commands[2]))
                 System.out.println("After command '" + commands[0] + " " + commands[1] + "' should be an ID" + "\n"
-                        + "For example: '" + commands[0] + " " + commands[1] + "' 1");
+                        + "For example: '" + commands[0] + " " + commands[1] + " 1'");
             else
                 System.out.println(commands[2] + " is not a number");
         }
@@ -87,6 +91,6 @@ public class Main {
                 "\t\t\t\t\t\tFor example: \"update region 1\".\n" +
                 "\n" +
                 "\tdelete <type> <id>\tDeletes specific object of type <type> with ID <id> from DB.\n" +
-                "\t\t\t\t\t\tFor example: \"update region 1\".\n");
+                "\t\t\t\t\t\tFor example: \"delete region 1\".\n");
     }
 }

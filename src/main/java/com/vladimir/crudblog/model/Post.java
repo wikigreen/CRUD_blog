@@ -7,8 +7,10 @@ import java.util.Locale;
 public class Post {
     private Long id;
     private String content;
-    private final Date created;
+    private Date created;
     private Date undated;
+
+    public Post(){}
 
     public Post(Long id, String content, Date created, Date undated) {
         this.id = id;
