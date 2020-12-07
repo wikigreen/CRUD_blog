@@ -7,7 +7,7 @@ import com.vladimir.crudblog.repository.io.JavaIoPostRepositoryImpl;
 import java.util.List;
 
 public class PostController {
-    private PostRepository repository = JavaIoPostRepositoryImpl.getInstance();
+    private final PostRepository repository = JavaIoPostRepositoryImpl.getInstance();
 
     public List<Post> getAll() {
         return repository.getAll();

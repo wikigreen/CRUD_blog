@@ -44,7 +44,7 @@ public class JavaIOUserRepositoryImpl implements UserRepository {
         dataOutputStream.writeLong(user.getId());
         dataOutputStream.writeUTF(user.getFirstName());
         dataOutputStream.writeUTF(user.getLastName());
-        dataOutputStream.writeLong(user.getRegion() == null ? (long)0 : user.getRegion().getId());
+        dataOutputStream.writeLong(user.getRegion() == null ? 0L : user.getRegion().getId());
         dataOutputStream.writeUTF(user.getRole().toString());
         dataOutputStream.writeInt(user.getPosts().size());
     }
@@ -57,7 +57,7 @@ public class JavaIOUserRepositoryImpl implements UserRepository {
             writeData(user);
             user.getPosts().forEach(p -> {
                 try {
-                    dataOutputStream.writeLong(p == null ? (long)0 : p.getId());// writing post
+                    dataOutputStream.writeLong(p == null ? 0L : p.getId());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -81,7 +81,7 @@ public class JavaIOUserRepositoryImpl implements UserRepository {
                     writeData(user);
                     user.getPosts().forEach(p -> {
                         try {
-                            dataOutputStream.writeLong(p == null ? (long)0 : p.getId());
+                            dataOutputStream.writeLong(p == null ? 0L : p.getId());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -91,7 +91,7 @@ public class JavaIOUserRepositoryImpl implements UserRepository {
                     writeData(u);
                     u.getPosts().forEach(p -> {
                         try {
-                            dataOutputStream.writeLong(p == null ? (long)0 : p.getId());
+                            dataOutputStream.writeLong(p == null ? 0L : p.getId());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -164,15 +164,15 @@ public class JavaIOUserRepositoryImpl implements UserRepository {
                 e.printStackTrace();
             }
             try {
-                Long tempId = dis.readLong();//reading user ID
-                String tempFirstName = dis.readUTF();// reading fn
-                String tempLastName = dis.readUTF();// reading ln
-                Long tempRegionId = dis.readLong();// reading region ID
-                Role tempRole = Role.parseRole(dis.readUTF()); // reading role
+                Long tempId = dis.readLong();
+                String tempFirstName = dis.readUTF();
+                String tempLastName = dis.readUTF();
+                Long tempRegionId = dis.readLong();
+                Role tempRole = Role.parseRole(dis.readUTF());
                 Region tempRegion = javaIORegionRepositoryImpl.getById(tempRegionId);
                 List<Post> tempPosts = new ArrayList<>();
-                for(int i = dis.readInt(); i > 0; i--){// reading posts size
-                    Long tempPostId = dis.readLong();//reading post id
+                for(int i = dis.readInt(); i > 0; i--){
+                    Long tempPostId = dis.readLong();
                     if(!tempPostId.equals((long)0))
                         tempPosts.add(javaIoPostRepositoryImpl.getById(tempPostId));
                 }

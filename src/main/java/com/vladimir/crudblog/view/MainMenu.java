@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class MainMenu {
     private static boolean isRunning = true;
-    private Scanner scanner = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
     public void run() {
         System.out.println("Type 'help' to see all commands.");

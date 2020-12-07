@@ -7,7 +7,7 @@ import com.vladimir.crudblog.repository.io.JavaIORegionRepositoryImpl;
 import java.util.List;
 
 public class RegionController {
-    private static RegionRepository repository = JavaIORegionRepositoryImpl.getInstance();
+    private final RegionRepository repository = JavaIORegionRepositoryImpl.getInstance();
 
     public List<Region> getAll(){
         return repository.getAll();

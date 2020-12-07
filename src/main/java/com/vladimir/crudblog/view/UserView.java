@@ -1,22 +1,17 @@
 package com.vladimir.crudblog.view;
 
-import com.vladimir.crudblog.controller.PostController;
 import com.vladimir.crudblog.controller.UserController;
 import com.vladimir.crudblog.model.Post;
 import com.vladimir.crudblog.model.Region;
 import com.vladimir.crudblog.model.Role;
 import com.vladimir.crudblog.model.User;
-import com.vladimir.crudblog.repository.RegionRepository;
-import com.vladimir.crudblog.repository.io.JavaIORegionRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class UserView implements View {
-    RegionRepository RegionRepository = JavaIORegionRepositoryImpl.getInstance();
     UserController userController = new UserController();
-    PostController postController = new PostController();
     private final Scanner SCANNER = new Scanner(System.in);
 
     @Override
@@ -36,7 +31,7 @@ public class UserView implements View {
                 continue;
             }
             if("new".equals(splitCommands[0])){
-                region = RegionRepository.save(new Region(null, splitCommands[1]));
+                region = new Region(null, splitCommands[1]);
                 break;
             }
             if("existing".equals(splitCommands[0])){
@@ -47,15 +42,11 @@ public class UserView implements View {
                     System.out.println(splitCommands[1] + " is not a number");
                     continue;
                 }
-                if(id.compareTo((long)0) < 1){
+                if(id.compareTo(0L) < 1){
                     System.out.println("ID always should be greater than 0");
                     continue;
                 }
-                region = RegionRepository.getById(id);
-                if (region == null){
-                    System.out.println("Region with id " + id + " does not exist");
-                    continue;
-                }
+                region = new Region(id, null);
                 break;
             }
         }
@@ -75,7 +66,7 @@ public class UserView implements View {
         }
 
         //Trying to get posts
-        ArrayList<Post> posts = new ArrayList<Post>();
+        ArrayList<Post> posts = new ArrayList<>();
         while(true){
             System.out.print("Type 'new' to add new post, or 'existing <id>' to add region from repository.\n" +
                     "To stop adding posts press 'Enter' button:");
@@ -84,14 +75,13 @@ public class UserView implements View {
                 break;
             if("new".equals(command)){
                 System.out.print("Type post, in the end type '%end' to save it:");
-                String strPost = "";
+                String content = "";
                 String line;
                 while(!(line = SCANNER.nextLine().trim()).equals("%end"))
-                    strPost += line + "\n";
-                if (strPost.length() == 0) strPost += " ";
-                Post post = postController.addPost(strPost);
+                    content += line + "\n";
+                if (content.length() == 0) content += " ";
+                Post post = new Post(null, content);
                 posts.add(post);
-                System.out.println("Added new Post with ID " + post.getId());
                 continue;
             }
             String[] commands = command.split(" +");
@@ -115,20 +105,29 @@ public class UserView implements View {
                 continue;
             }
 
-            Post post = postController.getByID(parsedId);
-            if(post == null){
-                System.out.println("Post with ID " + parsedId + " does not exist");
-                continue;
-            }
+            Post post = new Post(parsedId, null);
             posts.add(post);
-            System.out.println("Added new Post with ID " + post.getId());
         }
-        UserController.addUser(firstName, lastName, posts, region, role);
+        User user = userController.addUser(firstName, lastName, posts, region, role);
+
+        if(user.getRegion() == null)
+            System.out.println("Region with id " + region.getId() + " does not exist");
+        for(Post post : posts){
+            Boolean isPostMissed = user.getPosts().stream()
+                                        .filter(p -> p.getId().equals(post.getId()))
+                                        .map(p -> Boolean.FALSE)
+                                        .findAny().orElse(Boolean.TRUE);
+            if(isPostMissed)
+                System.out.println("Post with id " + post.getId() + " does not exist");
+        }
+        System.out.println();
+        System.out.println("User has been added to repository:\n" + user.toString());
+
     }
 
     @Override
     public void readAll() {
-        List<User> users = UserController.getAll();
+        List<User> users = userController.getAll();
 
         if(users.size() == 0){
             System.out.println("No users in repository");
@@ -143,12 +142,12 @@ public class UserView implements View {
     @Override
     public void read(Long id) {
         if(id == null) throw new IllegalArgumentException();
-        if(id.compareTo((long)0) < 1){
+        if(id.compareTo(0L) < 1){
             System.out.println("ID always should be greater than 0");
             return;
         }
 
-        User user = UserController.getByID(id);
+        User user = userController.getByID(id);
         if(user == null){
             System.out.println("There is no post with id " + id);
             return;
@@ -159,12 +158,12 @@ public class UserView implements View {
     @Override
     public void update(Long id) {
         if(id == null) throw new IllegalArgumentException();
-        if(id.compareTo((long)0) < 1){
+        if(id.compareTo(0L) < 1){
             System.out.println("ID always should be greater than 0");
             return;
         }
 
-        if(!UserController.exists(id)){
+        if(!userController.exists(id)){
             System.out.println("User with ID " + id + " does not exists");
             return;
         }
@@ -194,7 +193,7 @@ public class UserView implements View {
             }
 
             if("new".equals(splitCommands[0])){
-                region = RegionRepository.save(new Region(null, splitCommands[1]));
+                region = new Region(null, splitCommands[1]);
                 break;
             }
             if("existing".equals(splitCommands[0])){
@@ -205,15 +204,11 @@ public class UserView implements View {
                     System.out.println(splitCommands[1] + " is not a number");
                     continue;
                 }
-                if(regionId.compareTo((long)0) < 1){
+                if(regionId.compareTo(0L) < 1){
                     System.out.println("ID always should be greater than 0");
                     continue;
                 }
-                region = RegionRepository.getById(regionId);
-                if (region == null){
-                    System.out.println("Region with id " + regionId + " does not exist");
-                    continue;
-                }
+                region = new Region(regionId, null);
                 break;
             }
         }
@@ -270,7 +265,11 @@ public class UserView implements View {
         }
 
         User updatedUser = userController.update(id, firstName, lastName, region, role, postsToAdd, postsToDelete);
-        System.out.println("User with ID " + updatedUser.getId() + " has been updated successfully");
+        if(region != null && updatedUser.getRegion() == null)
+            System.out.println("Region with id " + region.getId() + " does not exist");
+        System.out.println("User with ID " + updatedUser.getId() + " has been updated successfully:");
+        System.out.println(updatedUser);
+
     }
 
     @Override
@@ -280,9 +279,8 @@ public class UserView implements View {
             System.out.println("ID always should be greater than 0");
             return;
         }
-
         try{
-            UserController.deleteByID(id);
+            userController.deleteByID(id);
         } catch (IllegalArgumentException e){
             System.out.println(e.getMessage());
             return;
