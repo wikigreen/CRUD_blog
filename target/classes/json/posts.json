@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "content": "1st post",
+    "created": 1609957358302,
+    "undated": 1609957358302
+  },
+  {
+    "id": 2,
+    "content": "2nd post",
+    "created": 1609957399077,
+    "undated": 1609957399077
+  },
+  {
+    "id": 3,
+    "content": "3rd post",
+    "created": 1609957416774,
+    "undated": 1609957416774
+  }
+]

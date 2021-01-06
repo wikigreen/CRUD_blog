@@ -58,8 +58,6 @@ public class MainMenu {
             else
                 System.out.println(commands[2] + " is not a number");
         }
-
-
     }
 
     private static void executeHelp() {

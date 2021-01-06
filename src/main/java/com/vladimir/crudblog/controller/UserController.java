@@ -5,14 +5,16 @@ import com.vladimir.crudblog.model.Region;
 import com.vladimir.crudblog.model.Role;
 import com.vladimir.crudblog.model.User;
 import com.vladimir.crudblog.repository.UserRepository;
-import com.vladimir.crudblog.repository.io.JavaIOUserRepositoryImpl;
+import com.vladimir.crudblog.repository.gson.JsonUserRepositoryImpl;
+//import com.vladimir.crudblog.repository.io.JavaIOUserRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class UserController {
-    private final UserRepository userRepository = JavaIOUserRepositoryImpl.getInstance();
+    private final UserRepository userRepository = JsonUserRepositoryImpl.getInstance();
+    //private final UserRepository userRepository = JavaIOUserRepositoryImpl.getInstance();
     private final PostController postController = new PostController();
     private final RegionController regionController = new RegionController();
 

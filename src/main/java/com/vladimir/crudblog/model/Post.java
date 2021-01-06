@@ -50,6 +50,12 @@ public class Post {
         this.content = content;
     }
 
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+
+
     public void setUpdated(Date undated) {
         this.undated = undated;
     }

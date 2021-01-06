@@ -4,7 +4,6 @@ import com.vladimir.crudblog.model.Post;
 import com.vladimir.crudblog.model.Region;
 import com.vladimir.crudblog.model.Role;
 import com.vladimir.crudblog.model.User;
-import com.vladimir.crudblog.repository.GenericRepository;
 import com.vladimir.crudblog.repository.UserRepository;
 
 import java.io.*;
@@ -17,7 +16,7 @@ public class JavaIOUserRepositoryImpl implements UserRepository {
     private static JavaIOUserRepositoryImpl instance;
     private final String USER_FILE_PATH = "src//main//resources//files//users.txt";
     private final File file;
-    DataOutputStream dataOutputStream;
+    private final DataOutputStream dataOutputStream;
     private Long lastId;
     private final JavaIoPostRepositoryImpl javaIoPostRepositoryImpl;
     private final JavaIORegionRepositoryImpl javaIORegionRepositoryImpl;

@@ -2,12 +2,14 @@ package com.vladimir.crudblog.controller;
 
 import com.vladimir.crudblog.model.Post;
 import com.vladimir.crudblog.repository.PostRepository;
+import com.vladimir.crudblog.repository.gson.JsonPostRepositoryImpl;
 import com.vladimir.crudblog.repository.io.JavaIoPostRepositoryImpl;
 
 import java.util.List;
 
 public class PostController {
-    private final PostRepository repository = JavaIoPostRepositoryImpl.getInstance();
+    //private final PostRepository repository = JavaIoPostRepositoryImpl.getInstance();
+    private final PostRepository repository = JsonPostRepositoryImpl.getInstance();
 
     public List<Post> getAll() {
         return repository.getAll();

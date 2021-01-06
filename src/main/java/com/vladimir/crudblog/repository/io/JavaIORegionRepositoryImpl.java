@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class JavaIORegionRepositoryImpl implements RegionRepository {
-
     private final String REGIONS_FILE_PATH = "src//main//resources//files//regions.txt";
     private static JavaIORegionRepositoryImpl instance;
     private final File file;
